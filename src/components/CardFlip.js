@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { useOverrides } from '@quarkly/components';
 import { Box, Text } from '@quarkly/widgets';
 const overrides = {
@@ -9,18 +9,7 @@ const overrides = {
 			'width': '300px',
 			'height': '450px',
 			'border': '1px solid #CCC',
-			'perspective': '600px',
-			'overflow': 'hidden'
-		}
-	},
-	'Flip card': {
-		'kind': 'Box',
-		'props': {
-			'height': '100%',
-			'width': '100%',
-			'transform-style': 'preserve-3d',
-			'cursor': 'pointer',
-			'position': 'relative'
+			'perspective': '600px'
 		}
 	},
 	'Flip card item': {
@@ -53,9 +42,6 @@ const flipStyles = {
 		transform: 'rotateX(-180deg)'
 	}
 };
-let currentStyles = {
-	transform: 'rotateY(180deg)'
-};
 
 const FlipCard = ({
 	flipTriggerProp,
@@ -68,35 +54,41 @@ const FlipCard = ({
 	const [isFlipped, setFlipped] = useState(false);
 	const flipTrigger = useMemo(() => flipTriggerProp === 'Click', [flipTriggerProp]);
 	const flipDuration = useMemo(() => flipDurationProp.replace(/\s+/g, ''), [flipDurationProp]);
-	useEffect(() => {
-		currentStyles = flipStyles[flipDirectionProp];
-	}, [flipDirectionProp]);
-
-	const onClickFlip = () => {
-		if (flipTrigger) setFlipped(!isFlipped);
-	};
-
-	const onHoverFlip = () => {
-		if (!flipTrigger) setFlipped(!isFlipped);
-	};
-
+	const currentStyles = useMemo(() => flipStyles[flipDirectionProp], [flipDirectionProp]);
+	const onClickFlip = useCallback(() => {
+		if (flipTrigger) {
+			setFlipped(!isFlipped);
+		}
+	}, [isFlipped]);
+	const onHoverFlip = useCallback(() => {
+		if (!flipTrigger) {
+			setFlipped(!isFlipped);
+		}
+	}, [isFlipped]);
 	const {
 		override,
 		rest
 	} = useOverrides(props, overrides);
-	return <Box {...rest} {...override(`Flip wrapper`)}>
+	return <Box
+		{...override(`Flip wrapper`)}
+		{...rest}
+		onClick={onClickFlip}
+		onMouseEnter={onHoverFlip}
+		onMouseLeave={onHoverFlip}
+	>
 		<Box
-			{...override(`Flip card`)}
+			height='100%'
+			width='100%'
+			transform-style='preserve-3d'
+			position='relative'
+			cursor='pointer'
 			transition={`transform ${flipDuration}ms ${timingFunctionProp}`}
-			onClick={onClickFlip}
-			onMouseEnter={onHoverFlip}
-			onMouseLeave={onHoverFlip}
-			{...isFlipped ? currentStyles : ''}
+			{...isFlipped && currentStyles}
 		>
 			<Box {...override(`Flip card item`, `Flip card item :Face`)}>
 				{children}
 			</Box>
-			<Box {...override(`Flip card item`, `Flip card item :Back`)} {...currentStyles} {...isFlipped ? '' : currentStyles}>
+			<Box {...override(`Flip card item`, `Flip card item :Back`)} {...currentStyles}>
 				<Text>
 					Бесплатный сервис Google позволяет мгновенно переводить слова, фразы и веб-страницы с английского более чем на 100 языков и обратно.
 						Вы посещали эту страницу несколько раз. Дата последнего посещения: 13.03.20 

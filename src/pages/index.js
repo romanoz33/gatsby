@@ -23,7 +23,7 @@ export default (() => {
 			<Text as="p" font="--lead" margin="20px 0 0 0">
 				Hi! I'm a paragraph. Click here to add your own text and edit me. It’s a piece of cake. I’m a great space for you to tell a story and let your site visitors know more about you. Talk about your business and what products and services you offer. Share how you came up with the idea for your company and what makes you different from your competitors. Make your business stand out and show your visitors who you are.
 			</Text>
-			<Components.CardFlip flipDirection="toDown" flipDuration="1000 " flipTriggerProp="Click">
+			<Components.CardFlip flipDirection="toDown" flipDuration="1000 " flipTriggerProp="Click" flipDirectionProp="toRight">
 				<Image width="100%" height="100%" src="https://images.unsplash.com/photo-1615921773341-e87e0771e323?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&h=2000" />
 			</Components.CardFlip>
 			<Button font="--lead" margin="20px">
